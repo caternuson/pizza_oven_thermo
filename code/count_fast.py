@@ -1,7 +1,5 @@
-
 import time
 import board
-import adafruit_mcp9600
 from adafruit_is31fl3731.matrix import Matrix
 import adafruit_imageload
 
@@ -11,19 +9,14 @@ import adafruit_imageload
 # 0x74-0x76 = IS31
 
 DIGITS = "digits.bmp"
-DELAY = 1
+DELAY = 0.0
 
-# setup IS31FL3731 matrix displays
 digits = (
-    Matrix(board.I2C(), address=0x74), # ones place
-    Matrix(board.I2C(), address=0x75), # tens place
-    Matrix(board.I2C(), address=0x76), # hundreds place
+    Matrix(board.I2C(), address=0x74),
+    Matrix(board.I2C(), address=0x75),
+    Matrix(board.I2C(), address=0x76),
 )
 
-# setup MCP9600 thermocouple
-mcp = adafruit_mcp9600.MCP9600(board.I2C())
-
-# load sprite sheet
 bmp, _ = adafruit_imageload.load(DIGITS)
 
 # clear displays and set draw frame
@@ -54,24 +47,25 @@ def show_digit(n, s=255):
     for i in range(3):
         digits[i].frame(last_frame, show=False)
 
-    # clear display
+    # clear frame
     for dig in digits:
         dig.fill(0)
 
-    # draw sprite sheet graphic onto display
+    # draw sprite sheet graphic
     for x in range(16):
         for y in range(9):
             digits[0].pixel(15-x, y, s*bmp[y+9*d0, x])
             digits[1].pixel(15-x, y, s*bmp[y+9*d1, x])
             digits[2].pixel(15-x, y, s*bmp[y+9*d2, x])
 
-    # show frame on display
+    # show frames
     for i in range(3):
         digits[i].frame(last_frame, show=True)
 
-    # toggle background frame and return
+    # toggle draw frame and return
     return 0 if last_frame else 1
 
 while True:
-    last_frame = show_digit(int(32 + 1.8 * mcp.temperature))
-    time.sleep(DELAY)
+    for i in range(999):
+        last_frame = show_digit(i)
+        time.sleep(DELAY)
