@@ -9,7 +9,7 @@ import adafruit_imageload
 # 0x74-0x76 = IS31
 
 DIGITS = "digits.bmp"
-DELAY = 0.0
+DELAY = 0
 
 digits = (
     Matrix(board.I2C(), address=0x74),
@@ -22,7 +22,7 @@ bmp, _ = adafruit_imageload.load(DIGITS)
 # clear displays and set draw frame
 for dig in digits:
     dig.fill(0)
-last_frame = 1
+draw_frame = 1
 
 def show_digit(n, s=255):
     """
@@ -40,16 +40,12 @@ def show_digit(n, s=255):
     # blank left padding
     if d2 == 0:
         d2 = 10
-    if d2 == 10 and d1 == 0:
-        d1 = 10
+        if d1 == 0:
+            d1 = 10
 
     # draw into background frame
     for i in range(3):
-        digits[i].frame(last_frame, show=False)
-
-    # clear frame
-    for dig in digits:
-        dig.fill(0)
+        digits[i].frame(draw_frame, show=False)
 
     # draw sprite sheet graphic
     for x in range(16):
@@ -60,12 +56,12 @@ def show_digit(n, s=255):
 
     # show frames
     for i in range(3):
-        digits[i].frame(last_frame, show=True)
+        digits[i].frame(draw_frame, show=True)
 
     # toggle draw frame and return
-    return 0 if last_frame else 1
+    return 0 if draw_frame else 1
 
-while True:
-    for i in range(999):
-        last_frame = show_digit(i)
-        time.sleep(DELAY)
+#while True:
+for i in range(999):
+    draw_frame = show_digit(i)
+    time.sleep(DELAY)

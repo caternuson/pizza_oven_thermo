@@ -29,7 +29,7 @@ bmp, _ = adafruit_imageload.load(DIGITS)
 # clear displays and set draw frame
 for dig in digits:
     dig.fill(0)
-last_frame = 1
+draw_frame = 1
 
 def show_digit(n, s=255):
     """
@@ -47,31 +47,27 @@ def show_digit(n, s=255):
     # blank left padding
     if d2 == 0:
         d2 = 10
-    if d2 == 10 and d1 == 0:
-        d1 = 10
+        if d1 == 0:
+            d1 = 10
 
     # draw into background frame
     for i in range(3):
-        digits[i].frame(last_frame, show=False)
+        digits[i].frame(draw_frame, show=False)
 
-    # clear display
-    for dig in digits:
-        dig.fill(0)
-
-    # draw sprite sheet graphic onto display
+    # draw sprite sheet graphic
     for x in range(16):
         for y in range(9):
             digits[0].pixel(15-x, y, s*bmp[y+9*d0, x])
             digits[1].pixel(15-x, y, s*bmp[y+9*d1, x])
             digits[2].pixel(15-x, y, s*bmp[y+9*d2, x])
 
-    # show frame on display
+    # show frames
     for i in range(3):
-        digits[i].frame(last_frame, show=True)
+        digits[i].frame(draw_frame, show=True)
 
-    # toggle background frame and return
-    return 0 if last_frame else 1
+    # toggle draw frame and return
+    return 0 if draw_frame else 1
 
 while True:
-    last_frame = show_digit(int(32 + 1.8 * mcp.temperature))
+    draw_frame = show_digit(int(32 + 1.8 * mcp.temperature))
     time.sleep(DELAY)
